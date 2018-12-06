@@ -64,11 +64,16 @@ class CompleteMe
 
     current.children.each do |key, node|
       if key != :end
-        word += key.to_s
-        gather_all_completions(node, found_strings, word)
+        gather_all_completions(node, found_strings, (word + key.to_s))
       end
     end
     return found_strings
+  end
+
+  def populate (file)
+    file.each do |word|
+      insert(word.chomp)
+    end
   end
 
 end
