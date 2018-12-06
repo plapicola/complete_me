@@ -24,4 +24,16 @@ class CompleteMeTest < Minitest::Test
     assert_equal ["pizza"], complete.suggest("piz")
   end
 
+  def test_it_can_load_a_dictionary
+    dictionary = File.readlines("/usr/share/dict/words")
+    complete = CompleteMe.new
+    complete.populate(dictionary)
+    assert_equal dictionary.length, complete.count
+    suggestions = complete.suggest("piz")
+    expected = dictionary.find_all{|word| word[0..2] == "piz"}
+    expected = expected.map {|word| word = word.chomp}
+
+    assert_equal expected, suggestions
+  end
+
 end
