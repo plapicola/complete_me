@@ -10,12 +10,12 @@ class CompleteMe
   end
 
   def insert(word)
-    first = get_required_child(@root, word)
+    first = generate_next(@root, word)
     @count += 1
     insert_word(first, word[1..-1])
   end
 
-  def get_required_child(current, letter)
+  def generate_next(current, letter)
     if current.has_child?(letter[0])
       next_node = current.get_child(letter[0])
     else
@@ -28,8 +28,54 @@ class CompleteMe
       current.children[:end] = true
       return
     end
-    next_node = get_required_child(current, word)
+    next_node = generate_next(current, word)
     insert_word(next_node, word[1..-1])
   end
 
+  def suggest(partial_string)
+    first = find_next(@root, partial_string[0])
+    return navigate_to_substring(first, partial_string, 1)
+  end
+
+  def navigate_to_substring(current, partial_string, index)
+    if partial_string.length == index
+      completed_strings = []
+      return gather_all_completions(current, completed_strings, partial_string)
+    end
+    next_node = find_next(current, partial_string[index])
+    if next_node == []
+      return next_node
+    end
+    return navigate_to_substring(next_node, partial_string, index + 1)
+  end
+
+  def find_next(current, letter)
+    if current.has_child?(letter)
+      next_node = current.get_child(letter.to_s)
+    else
+      return []
+    end
+  end
+
+  def gather_all_completions(current, found_strings, word)
+    if current.children[:end]
+      found_strings << word
+    end
+
+    current.children.each do |key, node|
+      if key != :end
+        word += key.to_s
+        gather_all_completions(node, found_strings, word)
+      end
+    end
+    return found_strings
+  end
+
 end
+
+# Suggestion Method:
+# Navigate to node for substring
+#     -  Return empty array for substring not in trie
+# Once node found, generate empty array
+# Recursively call each child of that array, adding called letter to calling
+# string, when a :end is hit, add string to array
