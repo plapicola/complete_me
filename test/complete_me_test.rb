@@ -1,5 +1,5 @@
 require_relative 'test_helper'
-
+$test
 class CompleteMeTest < Minitest::Test
 
   def test_it_exists
@@ -34,6 +34,22 @@ class CompleteMeTest < Minitest::Test
     expected = expected.map {|word| word = word.chomp}
 
     assert_equal expected, suggestions
+  end
+
+  def test_it_can_adjust_suggestions_based_on_selections
+    dictionary = File.readlines("/usr/share/dict/words")
+    complete = CompleteMe.new
+    complete.populate(dictionary)
+
+    complete.select("piz", "pizza")
+    complete.select("piz", "pizza")
+    complete.select("piz", "pizza")
+    complete.select("pizz", "pizzeria")
+    complete.select("pizz", "pizzeria")
+    complete.select("pizz", "pizzeria")
+
+    assert_equal "pizza", complete.suggest("piz").first
+    assert_equal "pizzeria", complete.suggest("pizz").first
   end
 
 end

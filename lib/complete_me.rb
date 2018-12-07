@@ -7,6 +7,7 @@ class CompleteMe
   def initialize
     @root = Node.new
     @count = 0
+    @selections = Hash.new(Hash.new(0))
   end
 
   def insert(word)
@@ -34,7 +35,8 @@ class CompleteMe
 
   def suggest(partial_string)
     first = find_next(@root, partial_string[0])
-    return navigate_to_substring(first, partial_string, 1)
+    suggestions =  navigate_to_substring(first, partial_string, 1)
+    sort_suggestions(suggestions, partial_string)
   end
 
   def navigate_to_substring(current, partial_string, index)
@@ -76,11 +78,43 @@ class CompleteMe
     end
   end
 
-end
+  def select(substring, selection)
+    if @selections.include?(substring)
+      if @selections[substring].include?(selection)
+        @selections[substring][selection] += 1
+      else
+        @selections[substring][selection] = 1
+      end
+    else
+      @selections[substring] = {selection => 1}
+      @selections[substring].default=(0)
+    end
+  end
 
-# Suggestion Method:
-# Navigate to node for substring
-#     -  Return empty array for substring not in trie
-# Once node found, generate empty array
-# Recursively call each child of that array, adding called letter to calling
-# string, when a :end is hit, add string to array
+  def sort_suggestions(suggestions, partial_string)
+    current = 0
+    largest = 0
+    while current < suggestions.length
+      array_traveler = current
+      largest = current
+      while array_traveler < suggestions.length
+        # binding.pry
+        if (@selections[partial_string][suggestions[array_traveler]] >
+           @selections[partial_string][suggestions[current]])
+           largest = array_traveler
+        end
+        array_traveler += 1
+      end
+      swap(current, largest, suggestions)
+      current += 1
+    end
+    return suggestions
+  end
+
+  def swap(first, second, suggestions)
+    temp = suggestions[first]
+    suggestions[first] = suggestions[second]
+    suggestions[second] = temp
+  end
+
+end
