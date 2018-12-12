@@ -16,6 +16,43 @@ class CompleteMe
     insert_word(first, word[1..-1])
   end
 
+  def realtime
+    chars = []
+    length = 4
+    suggestion = []
+    loop do
+      char = STDIN.getch
+      if char == "\t"
+        select(array_as_string(chars), suggestion.first)
+        binding.pry
+        break
+      elsif ["\n", "\r\n", "\r"].include?(char)
+        insert(array_as_string(chars))
+        break
+      end
+      chars << char
+      # binding.pry
+      if chars.length > 3
+        suggestion = suggest(array_as_string(chars))
+        print "#{"\b" * length}"
+        print "#{" " * length}"
+        # binding.pry
+        print "#{"\b" * length}"
+        print suggestion.first
+        length = suggestion.first.length unless suggestion == []
+        # binding.pry
+      else
+        print char
+      end
+    end
+  end
+
+  def array_as_string(array)
+    array.inject("") do |substring, letter|
+      substring + letter
+    end
+  end
+
   def generate_next(current, letter)
     if current.has_child?(letter[0])
       next_node = current.get_child(letter[0])

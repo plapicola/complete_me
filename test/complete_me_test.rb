@@ -52,4 +52,13 @@ class CompleteMeTest < Minitest::Test
     assert_equal "pizzeria", complete.suggest("pizz").first
   end
 
+  def test_words_can_be_deleted
+    dictionary = File.readlines("/user/share/dict/words")
+    complete = CompleteMe.new
+    complete.populate(dictionary)
+
+    # Add delete
+
+  end
+
 end
