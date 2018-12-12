@@ -1,4 +1,5 @@
 require_relative 'node'
+require 'io/console'
 
 class CompleteMe
 
@@ -153,5 +154,30 @@ class CompleteMe
     suggestions[first] = suggestions[second]
     suggestions[second] = temp
   end
+
+  def delete(word)
+    delete_word(@root, word, 0)
+  end
+
+  def delete_word(current, word, index)
+    if index == word.length
+      current.children[:end] = false
+      return current.children.count > 1
+    end
+
+    if current.children[word[index].to_sym] == nil
+      return true
+    end
+
+    if delete_word(current.children[word[index].to_sym], word, index + 1)
+      return true
+    else
+      current.children.delete(word[index].to_sym)
+      return current.children.count > 1
+    end
+  end
+
+  # Navigate to node, change end flag, return boolean if has children
+  # if recieve true, return true, else, delete node and return if children remain
 
 end

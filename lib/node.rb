@@ -28,8 +28,8 @@ class Node
     return @children[letter[0].to_sym]
   end
 
-  def end_of_word?
-    @children[:end]
-  end
+  # def end_of_word?
+  #   @children[:end]
+  # end
 
 end
