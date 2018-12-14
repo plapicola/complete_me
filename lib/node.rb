@@ -12,7 +12,7 @@ class Node
       return false
     end
 
-    return @children.keys.include?(letter[0].downcase.to_sym)
+    return @children.keys.include?(letter[0].to_sym)
   end
 
   def add_child(letter)

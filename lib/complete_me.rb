@@ -1,5 +1,6 @@
 require_relative 'node'
 require 'io/console'
+require 'csv'
 
 class CompleteMe
 
@@ -25,23 +26,19 @@ class CompleteMe
       char = STDIN.getch
       if char == "\t"
         select(array_as_string(chars), suggestion.first)
-        binding.pry
         break
       elsif ["\n", "\r\n", "\r"].include?(char)
         insert(array_as_string(chars))
         break
       end
       chars << char
-      # binding.pry
       if chars.length > 3
         suggestion = suggest(array_as_string(chars))
         print "#{"\b" * length}"
         print "#{" " * length}"
-        # binding.pry
         print "#{"\b" * length}"
         print suggestion.first
         length = suggestion.first.length unless suggestion == []
-        # binding.pry
       else
         print char
       end
@@ -90,6 +87,7 @@ class CompleteMe
   end
 
   def find_next(current, letter)
+    # binding.pry 
     if current.has_child?(letter)
       next_node = current.get_child(letter.to_s)
     else
@@ -136,7 +134,6 @@ class CompleteMe
       array_traveler = current
       largest = current
       while array_traveler < suggestions.length
-        # binding.pry
         if (@selections[partial_string][suggestions[array_traveler]] >
            @selections[partial_string][suggestions[current]])
            largest = array_traveler
@@ -177,7 +174,15 @@ class CompleteMe
     end
   end
 
-  # Navigate to node, change end flag, return boolean if has children
-  # if recieve true, return true, else, delete node and return if children remain
+  def populate_csv(file)
+    addresses = File.readlines(file)
 
+    addresses.delete_at(0)
+
+    addresses.each do |line|
+      info = line.split(",")
+      insert(info.last.chomp)
+    end
+
+  end
 end
